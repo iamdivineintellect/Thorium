@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Thorium – Call of Duty 4 client</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--accent:#F2A100;--text:#CFC29B;--bright:#F2E6BE;--dim:#8C8A78;--panel:rgba(24,26,18,.8);--line:#3A3D2C;--field:#14150F;--btn:#2A2D1F;--a:#1C1E14;--b:#0A0B07;--c:#15170F;--base:#0D0E0A;--ash:#BEB8A8;--red:#E5484D;--green:#6FCF4A;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:inherit}
+html,body{margin:0;height:100%}
+body{background:var(--base);color:var(--text);font-family:Bahnschrift,"Barlow Semi Condensed","Segoe UI",sans-serif;font-size:16px;overflow:hidden}
+.app{height:100%;display:grid;grid-template-rows:38px 1fr 30px;grid-template-columns:250px 1fr;background:linear-gradient(135deg,var(--a),var(--b) 60%,var(--c))}
+#ash{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}
+.vig{position:fixed;inset:0;pointer-events:none;z-index:2;background:radial-gradient(ellipse 85% 95% at 35% 50%,transparent 35%,rgba(0,0,0,.8))}
+.title{grid-column:1/3;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:space-between;padding-left:16px;z-index:3;color:var(--accent);font-size:14px;letter-spacing:.08em}
+.title span:last-child{display:flex}.title i{font-style:normal;width:46px;text-align:center;color:var(--dim)}
+aside{background:rgba(0,0,0,.5);border-right:1px solid var(--line);display:flex;flex-direction:column;z-index:3;overflow:auto}
+.logo{padding:26px 22px}.logo b{display:block;font-weight:500;font-size:34px;color:var(--bright);letter-spacing:.04em;line-height:1}
+.logo small{font-size:11px;color:var(--accent);letter-spacing:.1em;margin-left:2px}
+nav{flex:1}
+nav button{all:unset;box-sizing:border-box;display:block;width:100%;padding:11px 22px;font-size:20px;color:var(--dim);cursor:pointer;border-left:3px solid transparent;letter-spacing:.04em}
+nav button span{display:inline-block;transition:transform .14s}
+nav button:hover{color:var(--bright)}nav button:hover span{transform:translateX(8px)}
+nav button[aria-current=true]{color:var(--accent);border-color:var(--accent);background:color-mix(in srgb,var(--accent) 13%,transparent)}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.side-foot{padding:0 0 16px 25px;font-size:13px}.dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--green);margin-right:9px}
+.side-foot div{margin-bottom:10px}.side-foot .dim{font-size:12px;color:var(--dim)}
+main{padding:26px 34px;overflow:auto;z-index:3;position:relative}
+section{display:none;max-width:980px;margin:0 auto;min-height:100%;flex-direction:column;justify-content:center}
+section.on{display:flex;animation:in .25s ease-out}
+@keyframes in{from{opacity:0}to{opacity:1}}
+h1,h2,h3,p{margin:0}
+h2{font-weight:500;font-size:28px;color:var(--bright);margin-bottom:14px;letter-spacing:.03em}
+.kick{font-size:13px;color:var(--accent);letter-spacing:.08em}
+.hero{font-weight:500;font-size:clamp(54px,9vw,104px);line-height:.95;color:var(--bright);margin:2px 0 0 -3px;letter-spacing:.02em}
+.bar{height:3px;width:0;background:var(--accent);margin-top:8px;animation:grow 1s .2s ease-out forwards}
+@keyframes grow{to{width:180px}}
+.row{display:grid;grid-template-columns:1fr auto;gap:20px;align-items:end;margin-bottom:14px}
+.card{background:var(--panel);border:1px solid var(--line);padding:12px 16px}
+.head{font-size:13px;color:var(--accent);margin:0 0 6px;letter-spacing:.06em}
+.lbl{font-size:11px;color:var(--dim);letter-spacing:.08em}
+.copy{display:flex;align-items:center;gap:12px;margin-top:6px}.copy .lbl{width:66px}.copy b{font-weight:400;color:var(--bright);font-size:14px;flex:1}
+.sm{all:unset;cursor:pointer;font-size:11px;padding:3px 10px;border:1px solid var(--line);background:var(--btn);color:var(--text)}
+.sm:hover,.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn{all:unset;box-sizing:border-box;cursor:pointer;display:inline-block;padding:10px 22px;font-size:16px;border:1px solid var(--line);background:var(--btn);color:var(--text);margin:0 12px 10px 0;letter-spacing:.04em}
+.btn.big{font-size:26px;padding:12px 26px}
+.btn.go{background:var(--accent);color:var(--base);border-color:var(--accent)}.btn.go:hover{color:var(--base);filter:brightness(1.12)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:12px}
+.stat b{display:block;font-weight:400;font-size:28px;color:var(--bright);line-height:1.2}
+.two{display:grid;grid-template-columns:1.15fr 1fr;gap:10px;margin-bottom:12px}
+.big-t{font-size:19px;color:var(--bright)}.sub{font-size:13px;color:var(--dim);margin:2px 0 10px}
+.chk{display:flex;gap:10px;font-size:14px;margin:4px 0}.chk i{font-style:normal;color:var(--green)}
+.live{list-style:none;margin:0;padding:0}
+.live li{display:flex;justify-content:space-between;padding:6px 10px;cursor:pointer;font-size:15px}
+.live li:hover{background:rgba(255,255,255,.08)}.live li.sel{background:var(--accent);color:var(--base)}
+.live em{font-style:normal;opacity:.75}
+table{width:100%;border-collapse:collapse;font-size:15px}
+th{background:var(--field);color:var(--accent);text-align:left;font-weight:400;padding:8px 10px}
+td{padding:6px 10px}tbody tr:hover{background:rgba(255,255,255,.08)}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:10px}
+.grid3 .card p{font-size:14px;line-height:1.55}
+.grid3 .card h3{font-weight:500;font-size:20px;color:var(--bright);margin-bottom:6px}
+ol.steps{font-size:15px;line-height:1.7;padding-left:20px;margin:0 0 6px}
+code{background:var(--field);border:1px solid var(--line);padding:1px 6px;font-size:14px;color:var(--bright)}
+pre{background:var(--field);border:1px solid var(--line);padding:14px;margin:10px 0 0;overflow-x:auto;font-size:14px;color:var(--bright);line-height:1.6}
+.themes{display:flex;flex-wrap:wrap;gap:10px;margin:8px 0 16px}
+.th{all:unset;cursor:pointer;display:flex;align-items:center;gap:10px;padding:8px 16px 8px 10px;border:1px solid var(--line);background:var(--btn);font-size:15px}
+.th i{width:14px;height:14px;border-radius:50%}.th[aria-pressed=true]{border-color:var(--accent);color:var(--accent)}
+.warn{border:2px solid var(--accent);background:var(--panel);padding:16px 18px;margin-bottom:12px}
+.pk{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:4px;margin-bottom:12px}
+.pk button{all:unset;box-sizing:border-box;cursor:pointer;padding:6px 10px;font-size:14px;background:var(--field);border:1px solid var(--line)}
+.pk button:hover{background:rgba(255,255,255,.08)}.pk button[aria-pressed=true]{background:var(--accent);color:var(--base);border-color:var(--accent)}
+.cmd{display:flex;gap:10px;align-items:center;margin:6px 0 12px}.cmd pre{flex:1;margin:0;padding:9px 12px}
+.setup{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:14px}
+.setup .card b{display:block;font-weight:500;font-size:34px;color:var(--accent);line-height:1}
+.setup .card h3{font-weight:500;font-size:20px;color:var(--bright);margin:6px 0 4px}.setup .card p{font-size:14px;line-height:1.5}
+details{background:var(--panel);border:1px solid var(--line);margin-bottom:6px}
+summary{cursor:pointer;padding:10px 14px;font-size:15px;color:var(--bright)}details[open] summary{color:var(--accent)}
+details p{padding:0 14px 12px;font-size:14px;line-height:1.6;max-width:640px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}.chips button{all:unset;cursor:pointer;font-size:13px;padding:4px 10px;border:1px solid var(--line);background:var(--btn)}.chips button:hover{border-color:var(--accent);color:var(--accent)}
+.tabs{display:flex;flex-wrap:wrap;margin-bottom:12px}
+.tabs button{all:unset;cursor:pointer;padding:7px 14px;font-size:14px;color:var(--dim);border-bottom:2px solid transparent}
+.tabs button:hover{color:var(--bright)}.tabs button[aria-selected=true]{color:var(--accent);border-color:var(--accent)}
+.tp{display:none;font-size:15px;line-height:1.65;max-width:620px}.tp.on{display:block}
+footer{grid-column:1/3;background:rgba(0,0,0,.6);display:flex;align-items:center;padding:0 16px;font-size:12px;color:var(--dim);z-index:3}
+@media(max-width:820px){
+ body{overflow:auto}.app{display:block;height:auto;min-height:100%}
+ .title{position:sticky;top:0}aside{border-right:0;border-bottom:1px solid var(--line)}
+ .logo{padding:16px 22px 8px}.logo b{font-size:28px}nav{display:flex;overflow-x:auto}nav button{width:auto;white-space:nowrap;font-size:16px;padding:10px 14px;border-left:0;border-bottom:3px solid transparent}
+ nav button[aria-current=true]{border-bottom-color:var(--accent)}.side-foot{display:none}
+ main{padding:20px 16px;overflow:visible}section{min-height:0}
+ .row,.two{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}
+ footer{position:sticky;bottom:0}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.bar{width:180px}}
+</style>
+</head>
+<body>
+<canvas id="ash" aria-hidden="true"></canvas><div class="vig"></div>
+<div class="app">
+ <div class="title"><span>THORIUM</span><span aria-hidden="true"><i>–</i><i>✕</i></span></div>
+ <aside>
+  <div class="logo"><b>THORIUM</b><small>CALL OF DUTY 4 CLIENT</small></div>
+  <nav id="nav" aria-label="Main">
+   <button data-p="home" aria-current="true"><span>HOME</span></button>
+   <button data-p="campaign"><span>CAMPAIGN</span></button>
+   <button data-p="bots"><span>BOT GAMES</span></button>
+   <button data-p="features"><span>FEATURES</span></button>
+   <button data-p="get"><span>SETUP</span></button>
+   <button data-p="look"><span>APPEARANCE</span></button>
+  </nav>
+  <div class="side-foot"><div><span class="dot" style="background:var(--red)"></span>OFFLINE</div><div class="dim" id="pt">PLAYTIME  0m 00s</div><div class="dim">VERSION  1.10</div></div>
+ </aside>
+
+ <main>
+  <section id="home" class="on">
+   <div class="row">
+    <div><div class="kick">CALL OF DUTY 4  //  OFFLINE CLIENT</div><h1 class="hero">PLAY CALL OF DUTY 4 YOUR WAY</h1><div class="bar"></div></div>
+   </div>
+   <div class="stats">
+    <div class="card stat"><span class="lbl">MODE</span><b style="color:var(--red)">OFFLINE</b></div>
+    <div class="card stat"><span class="lbl">CAMPAIGN</span><b>READY</b></div>
+    <div class="card stat"><span class="lbl">PEZBOTS</span><b>UP TO 17</b></div>
+    <div class="card stat"><span class="lbl">VERSION</span><b>1.10</b></div>
+   </div>
+   <div class="two">
+    <div class="card"><div class="head">WHAT IT DOES</div>
+     <div class="big-t">One launcher for the campaign and private bot games</div>
+     <div class="sub">Patch 1.7 · runs entirely on your PC · no accounts, no network needed</div>
+     <a class="btn go" href="https://gofile.io/d/uudml3Zs" target="_blank" rel="noopener">DOWNLOAD THORIUM</a><a class="btn" href="#" data-go="bots">BOT GAMES</a></div>
+    <div class="card"><div class="head">SETUP CHECK</div>
+     <div class="chk"><i>✓</i>Game found next to iw3mp.exe</div><div class="chk"><i>✓</i>Patch 1.7 detected</div>
+     <div class="chk"><i>✓</i>iw3sp.exe found for the campaign</div><div class="chk"><i>✓</i>PeZBOT installed</div></div>
+   </div>
+   <div class="card"><div class="head">YOUR SESSION <span class="lbl" style="float:right">PREVIEW</span></div>
+    <div class="big-t">Not in a match</div><div class="sub">Start the campaign, or set up an offline game with bots.</div>
+    <button class="btn" data-go="campaign">START CAMPAIGN</button><button class="btn go" data-go="bots">BOT GAME</button></div>
+  </section>
+
+  <section id="campaign">
+   <h2>CAMPAIGN</h2>
+   <div class="card" style="max-width:640px">
+    <div class="head">SINGLE PLAYER</div>
+    <div class="big-t">Start the campaign from Thorium</div>
+    <div class="sub">One button launches the campaign. The Thorium version label shows in the top right of the game window, and your time counts toward playtime and Discord presence.</div>
+    <button class="btn big" id="camp">START CAMPAIGN</button>
+   </div>
+   <div class="card" style="max-width:640px;margin-top:12px">
+    <div class="head">WANT BOTS?</div>
+    <div class="sub">Custom games with PeZBOT bots have their own page, with the launch options you need.</div>
+    <button class="btn" data-go="bots" style="margin:0">OPEN BOT GAMES</button>
+   </div>
+  </section>
+
+  <section id="bots">
+   <h2>BOT GAMES</h2>
+   <div class="warn">
+    <div class="head" style="font-size:15px">BOTS NEED THESE LAUNCH OPTIONS</div>
+    <div class="sub" style="color:var(--text);font-size:15px;margin-bottom:6px">Thorium adds them for you. If you start the game yourself, paste this into your launch options or the bots will not appear.</div>
+    <div class="cmd"><pre>+set fs_game "mods/PeZBOT" +exec pezbot.cfg</pre><button class="btn" data-c='+set fs_game "mods/PeZBOT" +exec pezbot.cfg' style="margin:0">COPY</button></div>
+   </div>
+   <div class="card">
+    <div class="head">BUILD A CUSTOM GAME</div>
+    <div class="lbl" style="margin-bottom:5px">MAP</div><div class="pk" id="pkMap"></div>
+    <div class="lbl" style="margin-bottom:5px">GAME MODE</div><div class="pk" id="pkMode"></div>
+    <div class="head" id="botsL">PEZBOTS: 6</div>
+    <input type="range" id="bots" min="0" max="17" value="6" aria-label="PezBots" style="width:100%;accent-color:var(--accent)">
+    <div class="lbl" style="margin-top:14px">FULL LAUNCH OPTIONS</div>
+    <div class="cmd"><pre id="full"></pre><button class="btn" id="cFull" style="margin:0">COPY</button></div>
+    <div class="lbl">THEN, ONCE THE MAP HAS LOADED: OPEN THE CONSOLE (~), PASTE, PRESS ENTER</div>
+    <div class="cmd"><pre id="con"></pre><button class="btn" id="cCon" style="margin:0">COPY</button></div>
+    <p class="sub" style="margin:0">Players who join need the PeZBOT folder in their own <code>mods</code> folder. Turn on Enable Console under Options, Game Options first.</p>
+   </div>
+   <div class="card" style="margin-top:12px">
+    <div class="head">CONSOLE CHEAT SHEET <span class="lbl" style="float:right">CLICK TO COPY</span></div>
+    <div class="chips" id="chips"></div>
+    <p class="sub" style="margin:10px 0 0">Cheats only work on a map started with <code>devmap</code>. Tick Host with cheats in Settings, Console.</p>
+   </div>
+  </section>
+
+  <section id="features">
+   <h2>FEATURES</h2>
+   <div class="grid3">
+    <div class="card"><h3>Campaign launcher</h3><p>Start the single-player campaign with one button. The in-game version label and playtime tracking work there too.</p></div>
+    <div class="card"><h3>Offline games with bots</h3><p>Start a private game on your own PC and add up to 17 PeZBOT bots with a slider. Thorium installs the mod for you and copies the console command.</p></div>
+    <div class="card"><h3>20 maps, 6 modes</h3><p>Team Deathmatch, Free-for-All, Search &amp; Destroy, Domination, Headquarters and Sabotage on every classic map.</p></div>
+    <div class="card"><h3>Performance graph</h3><p>CPU and memory use over the last 30 seconds, drawn as a click-through overlay. Nothing is injected into the game.</p></div>
+    <div class="card"><h3>Discord presence</h3><p>Show your map and playtime. Addresses and join links are never shared.</p></div>
+    <div class="card"><h3>Six themes</h3><p>Switch the whole launcher between six palettes, with optional ash and embers on the home screen.</p></div>
+   </div>
+   <h2 style="margin-top:22px;font-size:22px">SETTINGS</h2>
+   <div class="card">
+    <div class="tabs" role="tablist" id="tabs"></div>
+    <p class="tp on">Set your player name and game folder, minimize Thorium while you play, and add extra launch options.</p>
+    <p class="tp">Field of view, max FPS, volume, resolution, fullscreen and V-Sync, and an option to apply them every time the game starts.</p>
+    <p class="tp">Turn on the in-game console and host with cheats for testing. Copy the game log after a failed join.</p>
+    <p class="tp">Choose what Discord shows: map and total playtime.</p>
+    <p class="tp">Pick one of six themes and toggle the ash and embers on the home screen.</p>
+    <p class="tp">Version, build and total playtime.</p>
+   </div>
+  </section>
+
+  <section id="get">
+   <h2>SETUP</h2>
+   <div class="setup">
+    <div class="card"><b>1</b><h3>Download</h3><p>Grab the zip from Gofile.</p><a class="btn go" href="https://gofile.io/d/uudml3Zs" target="_blank" rel="noopener" style="margin:10px 0 0">DOWNLOAD</a></div>
+    <div class="card"><b>2</b><h3>Extract the zip</h3><p>Unzip it into your Call of Duty 4 folder, next to <code>iw3mp.exe</code>.</p></div>
+    <div class="card"><b>3</b><h3>Launch Thorium.exe</h3><p>That's it. You're done. Start the campaign or a bot game.</p></div>
+   </div>
+   <div class="head">GOOD TO KNOW</div>
+   <details><summary>Which version of the game do I need?</summary><p>Call of Duty 4 patched to 1.7.</p></details>
+   <details><summary>Do I need to install the PeZBOT mod?</summary><p>No. The first time you start a game with bots, Thorium copies it to your game's mods folder.</p></details>
+   <details><summary>My bots are not showing up</summary><p>Make sure the game started with <code>+set fs_game "mods/PeZBOT" +exec pezbot.cfg</code>, then open the console once the map has loaded and enter <code>svr_pezbots</code> with a number. See the Bot Games page.</p></details>
+   <details><summary>The console will not open</summary><p>In the game, open Options, then Game Options, and set Enable Console to Yes. Then press the tilde key (~).</p></details>
+   <details><summary>Windows Firewall asks for permission</summary><p>Allow Thorium and iw3mp.exe the first time you start a game.</p></details>
+  </section>
+
+  <section id="look">
+   <h2>APPEARANCE</h2>
+   <div class="head">THEME</div>
+   <div class="themes" id="themes"></div>
+   <div class="head">EFFECTS</div>
+   <label style="font-size:15px;cursor:pointer"><input type="checkbox" id="ashT" checked> Ash and embers</label>
+  </section>
+ </main>
+ <footer id="status">READY</footer>
+</div>
+
+<script>
+const T=[["Thorium","#F2A100","#CFC29B","#F2E6BE","#8C8A78","rgba(24,26,18,.8)","#3A3D2C","#14150F","#2A2D1F","#1C1E14","#0A0B07","#15170F","#0D0E0A","#BEB8A8"],
+["Ghost","#37C6F2","#B9C7D3","#E6F1FA","#7B8794","rgba(18,24,32,.8)","#2B3846","#0E141B","#1B2733","#141C26","#080B10","#0F151D","#06090D","#AEBBC8"],
+["Crimson","#E5484D","#D2B8B4","#F6E3DF","#8F7A77","rgba(30,18,18,.8)","#432A2A","#160E0E","#2E1B1B","#241414","#0D0707","#1B0F0F","#0F0808","#C9B1AD"],
+["Woodland","#6FCF4A","#BFCBA9","#E9F2D8","#7F8A6E","rgba(20,26,16,.8)","#2E3D26","#0E130B","#1E2A18","#151D10","#080B06","#10160B","#0A0E07","#B4BFA0"],
+["Desert","#E0A458","#D6C3A3","#F7EAD2","#9A8A70","rgba(31,24,16,.8)","#4A3C28","#16110B","#2E2416","#241C11","#0E0A06","#1A130B","#100B06","#CDBA98"],
+["Violet","#A78BFA","#C6BDD8","#EEE8FA","#857E99","rgba(23,19,31,.8)","#3A3250","#100D17","#272036","#1D1729","#0B080F","#140F1C","#0A0710","#BDB5D0"]];
+const K=["accent","text","bright","dim","panel","line","field","btn","a","b","c","base","ash"];
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const st=m=>$("#status").textContent=m;
+let ashCol="#BEB8A8",ember="#F2A100";
+function theme(i){const t=T[i];K.forEach((k,j)=>document.documentElement.style.setProperty("--"+k,t[j+1]));
+ ashCol=t[13];ember=t[1];$$(".th").forEach((b,j)=>b.setAttribute("aria-pressed",j===i));st("THEME: "+t[0].toUpperCase());try{localStorage.setItem("th",i)}catch(e){}}
+$("#themes").innerHTML=T.map((t,i)=>`<button class="th" aria-pressed="false" data-i="${i}"><i style="background:${t[1]}"></i>${t[0]}</button>`).join("");
+$("#themes").onclick=e=>{const b=e.target.closest(".th");if(b)theme(+b.dataset.i)};
+let saved=0;try{saved=+localStorage.getItem("th")||0}catch(e){}theme(saved);
+
+function go(p){try{history.replaceState(null,"","#"+p)}catch(e){}$$("section").forEach(s=>s.classList.toggle("on",s.id===p));$$("#nav button").forEach(b=>b.setAttribute("aria-current",b.dataset.p===p));$("main").scrollTop=0;st(p.toUpperCase())}
+$("#nav").onclick=e=>{const b=e.target.closest("button");if(b)go(b.dataset.p)};
+$$("[data-go]").forEach(a=>a.onclick=e=>{e.preventDefault();go(a.dataset.go)});
+document.addEventListener("click",e=>{const c=e.target.closest("[data-c]");if(!c)return;
+ try{navigator.clipboard.writeText(c.dataset.c).then(()=>st("COPIED TO CLIPBOARD"))}catch(x){st("COPY FAILED")}});
+
+$("#camp").onclick=()=>st("THE CAMPAIGN STARTS IN THE LAUNCHER");
+const M=[["Backlot","mp_backlot"],["Bloc","mp_bloc"],["Bog","mp_bog"],["Broadcast","mp_broadcast"],["Chinatown","mp_carentan"],["Wet Work","mp_cargoship"],["District","mp_citystreets"],["Ambush","mp_convoy"],["Countdown","mp_countdown"],["Crash","mp_crash"],["Crossfire","mp_crossfire"],["Downpour","mp_farm"],["Overgrown","mp_overgrown"],["Pipeline","mp_pipeline"],["Shipment","mp_shipment"],["Showdown","mp_showdown"],["Strike","mp_strike"],["Vacant","mp_vacant"],["Creek","mp_creek"],["Killhouse","mp_killhouse"]],GM=[["Team Deathmatch","war"],["Free-for-All","dm"],["Search & Destroy","sd"],["Domination","dom"],["Headquarters","koth"],["Sabotage","sab"]];
+let m=M[9][1],g="war",n=6;
+const FS='+set fs_game "mods/PeZBOT" +exec pezbot.cfg';
+function pk(el,arr,get,set){el.innerHTML=arr.map((x,i)=>`<button aria-pressed="false" data-i="${i}">${x[0]}</button>`).join("");
+ el.onclick=e=>{const b=e.target.closest("button");if(!b)return;set(arr[b.dataset.i][1]);mark();upd()}}
+function mark(){$$("#pkMap button").forEach((b,i)=>b.setAttribute("aria-pressed",M[i][1]===m));$$("#pkMode button").forEach((b,i)=>b.setAttribute("aria-pressed",GM[i][1]===g))}
+function upd(){const f=FS+" +set g_gametype "+g+" +map "+m,c="svr_pezbots "+n;
+ $("#full").textContent=f;$("#con").textContent=c;$("#cFull").dataset.c=f;$("#cCon").dataset.c=c;$("#botsL").textContent="PEZBOTS: "+n}
+pk($("#pkMap"),M,0,v=>m=v);pk($("#pkMode"),GM,0,v=>g=v);mark();upd();
+$("#bots").oninput=e=>{n=+e.target.value;upd()};
+const CH=["devmap mp_crash","god","noclip","give all","ufo","notarget","timescale 0.5","cg_fov 80","kill"];
+$("#chips").innerHTML=CH.map(c=>`<button data-c="${c}">${c}</button>`).join("");
+// playtime ticker, deep links and shortcuts
+const t0=Date.now();setInterval(()=>{const t=Math.floor((Date.now()-t0)/1000);$("#pt").textContent="PLAYTIME  "+Math.floor(t/60)+"m "+String(t%60).padStart(2,"0")+"s"},1000);
+const P=$$("#nav button").map(b=>b.dataset.p);
+addEventListener("keydown",e=>{if(e.target.matches("input")||e.ctrlKey||e.metaKey||e.altKey)return;const i=+e.key-1;if(P[i])go(P[i])});
+const tn=["GENERAL","GAME","CONSOLE","DISCORD","APPEARANCE","ABOUT"];
+$("#tabs").innerHTML=tn.map((n,i)=>`<button role="tab" aria-selected="${i==0}">${n}</button>`).join("");
+$("#tabs").onclick=e=>{const b=e.target.closest("button");if(!b)return;const i=$$("#tabs button").indexOf(b);
+ $$("#tabs button").forEach(x=>x.setAttribute("aria-selected",x===b));$$(".tp").forEach((p,j)=>p.classList.toggle("on",j===i))};
+
+// ash and embers
+const cv=$("#ash"),cx=cv.getContext("2d");let W,H,S=[],on=true;
+function size(){W=cv.width=innerWidth;H=cv.height=innerHeight}
+function mk(init){const em=Math.random()<.18;return{x:Math.random()*W,y:init?Math.random()*H:H+10,r:em?1.2+Math.random()*1.8:1+Math.random()*2.4,em,vy:-(em?.5+Math.random()*.9:.15+Math.random()*.35),ph:Math.random()*6.28,sw:.3+Math.random()*.6,o:em?.9:.1+Math.random()*.4}}
+size();addEventListener("resize",size);for(let i=0;i<70;i++)S.push(mk(true));
+const rm=matchMedia("(prefers-reduced-motion:reduce)");
+function tick(){cx.clearRect(0,0,W,H);if(on&&!rm.matches){for(const s of S){s.y+=s.vy;s.ph+=.02;s.x+=Math.sin(s.ph)*s.sw;if(s.y<-10)Object.assign(s,mk(false));
+ cx.globalAlpha=s.o;cx.fillStyle=s.em?ember:ashCol;cx.beginPath();cx.arc(s.x,s.y,s.r,0,6.28);cx.fill()}}requestAnimationFrame(tick)}
+if(P.includes(location.hash.slice(1)))go(location.hash.slice(1));
+tick();$("#ashT").onchange=e=>on=e.target.checked;
+</script>
+</body>
+</html>
